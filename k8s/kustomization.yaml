@@ -8,4 +8,4 @@ namespace: hello-gitops
 images:
 - name: hello-gitops
   newName: ai2humanize/hello-gitops
-  newTag: 339ff84f204e14894f563d203fed303b84459cce
+  newTag: 4859d32d5db0a157621612fd3c22d42e67565e69
