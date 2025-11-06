@@ -151,7 +151,7 @@ jobs:
       run: |
         kubectl patch service hello-gitops \
           -p '{"spec":{"selector":{"app":"hello-gitops","namespace":"'"${{ env.NEW_NAMESPACE }}"'"}}}' \
-          -n -n ${{ env.NEW_NAMESPACE }}
+          -n ${{ env.NEW_NAMESPACE }}
 
     # REMOVE OLD DEPLOYMENT!!
     - name: Remove old namespace
