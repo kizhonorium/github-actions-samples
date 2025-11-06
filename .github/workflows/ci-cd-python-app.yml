@@ -149,9 +149,7 @@ jobs:
 
     - name: Route traffic to new namespace
       run: |
-        # ensure service name & namespace are correct
-        kubectl get svc hello-gitops -n default
-        kubectl patch svc hello-gitops -n default -p '{"spec":{"selector":{"app":"hello-gitops","namespace":"'"${{ env.NEW_NAMESPACE }}"'"}}}'
+        kubectl patch service hello-gitops -n default -p '{"spec":{"selector":{"app":"hello-gitops","namespace":"'"${{ env.NEW_NAMESPACE }}"'"}}}'
 
     # REMOVE OLD DEPLOYMENT!!
     - name: Remove old namespace
