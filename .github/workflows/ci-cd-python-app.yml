@@ -148,7 +148,9 @@ jobs:
         kubectl rollout status deployment/hello-gitops -n ${{ env.NEW_NAMESPACE }} --timeout=120s
 
     - name: Route traffic to new namespace
-      run: |    
+      run: |
+        # ensure service name & namespace are correct
+        kubectl get svc hello-gitops -n default
         kubectl patch svc hello-gitops -n default -p '{"spec":{"selector":{"app":"hello-gitops","namespace":"'"${{ env.NEW_NAMESPACE }}"'"}}}'
 
     # REMOVE OLD DEPLOYMENT!!
