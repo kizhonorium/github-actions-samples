@@ -153,15 +153,6 @@ jobs:
           -p '{"spec":{"selector":{"app":"hello-gitops","namespace":"'"${{ env.NEW_NAMESPACE }}"'"}}}' \
           -n ${{ env.NEW_NAMESPACE }}
 
-    # REMOVE OLD DEPLOYMENT!!
-    - name: Remove old namespace
-      run: |
-        namespacePresentOld=`kubectl get ns | grep ${{ env.OLD_NAMESPACE }} | wc -l`
-        if [ $namespacePresentOld -eq 1 ]
-        then
-          kubectl delete ns ${{ env.OLD_NAMESPACE }} --wait=true
-        fi
-  
     - name: Test the new deployment
       run: |
         kubectl -n ${{ env.NEW_NAMESPACE }} port-forward $(kubectl -n ${{ env.NEW_NAMESPACE }} get po -o name | tail -n 1) 8050:8050
@@ -180,6 +171,14 @@ jobs:
           -n ${{ env.OLD_NAMESPACE }}
         exit 1
 
+    - name: Remove old namespace
+      run: |
+        namespacePresentOld=`kubectl get ns | grep ${{ env.OLD_NAMESPACE }} | wc -l`
+        if [ $namespacePresentOld -eq 1 ]
+        then
+          kubectl delete ns ${{ env.OLD_NAMESPACE }} --wait=true
+        fi
+  
     - name: Commit files
       run: |
         git config --local user.email "action@github.com"
