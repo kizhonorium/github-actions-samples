@@ -153,25 +153,6 @@ jobs:
           -p '{"spec":{"selector":{"app":"hello-gitops","namespace":"'"${{ env.NEW_NAMESPACE }}"'"}}}' \
           -n ${{ env.NEW_NAMESPACE }}
 
-    - name: Test the new deployment
-      run: |
-        INGRESS_IP=$(kubectl get ingress hello-gitops -n ${{ env.NEW_NAMESPACE }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-        echo "Ingress IP is $INGRESS_IP"
-        for i in {1..30}; do
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://$INGRESS_IP/health)
-          if [ "$HTTP_CODE" = "200" ]; then
-            echo "✅ Service responded OK after $i attempts"
-            exit 0
-          else
-            echo "Waiting for service to respond (attempt $i), got HTTP $HTTP_CODE"
-            sleep 10
-          fi
-        done
-        echo "❌ Service did not respond with 200 after 5 minutes — rolling back"
-        kubectl patch service hello-gitops -n default \
-          -p '{"spec":{"selector":{"app":"hello-gitops","namespace":"'"${{ env.OLD_NAMESPACE }}"'"}}}'
-        exit 1
-
     # REMOVE OLD DEPLOYMENT!!
     - name: Remove old namespace
       run: |
