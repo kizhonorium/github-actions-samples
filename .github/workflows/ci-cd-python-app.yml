@@ -155,10 +155,12 @@ jobs:
 
     - name: Test the new deployment
       run: |
-        kubectl -n ${{ env.NEW_NAMESPACE }} port-forward $(kubectl -n ${{ env.NEW_NAMESPACE }} get po -o name | tail -n 1) 8050:8050
+        kubectl -n ${{ env.NEW_NAMESPACE }} port-forward $(kubectl -n ${{ env.NEW_NAMESPACE }} get po -o name | tail -n 1) 8050:8050 &
+        PF_PID=$!
         for i in {1..30}; do
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8050)
           if [ "$HTTP_CODE" = "200" ]; then
+            kill $PF_PID
             exit 0
           else
             echo "Waiting for service to respond (attempt $i), got HTTP $HTTP_CODE"
@@ -166,6 +168,7 @@ jobs:
           fi
         done
         echo "Service did not respond with 200 after 5 minutes — rolling back"
+        kill $PF_PID
         kubectl patch service hello-gitops \
           -p '{"spec":{"selector":{"app":"hello-gitops","namespace":"'"${{ env.OLD_NAMESPACE }}"'"}}}' \
           -n ${{ env.OLD_NAMESPACE }}
