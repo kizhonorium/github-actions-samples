@@ -164,10 +164,10 @@ jobs:
  
     - name: Commit files
       run: |
-        git pull origin main
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git commit -am "Bump docker tag"
+        git pull origin main
         
     - name: Push changes
       uses: ad-m/github-push-action@master
